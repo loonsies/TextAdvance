@@ -71,6 +71,10 @@ internal class Overlay : Window
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
+            ImGuiEx.Text(C.GetEnableTalkSkipCutscene() ? col : ImGuiColors.DalamudGrey2, "TSC");
+            ImGui.SameLine(0, 0);
+            ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
+            ImGui.SameLine(0, 0);
             ImGuiEx.Text(C.GetEnableAutoInteract() ? col : ImGuiColors.DalamudGrey2, "IN");
             /*ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");

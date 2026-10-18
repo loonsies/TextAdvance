@@ -57,7 +57,8 @@ internal static class TabTerritory
                 ImGui.Checkbox("Automatic quest accept", ref settings.EnableQuestAccept);
                 ImGui.Checkbox("Automatic quest complete", ref settings.EnableQuestComplete);
                 ImGui.Checkbox("Automatic reward pick (RP) (BETA)", ref settings.EnableRewardPick);
-                ImGui.Checkbox("Automatic talk skip", ref settings.EnableTalkSkip);
+                ImGui.Checkbox("Automatic talk skip outside cutscenes (TS)", ref settings.EnableTalkSkip);
+                ImGui.Checkbox("Automatic talk skip during cutscenes (TSC)", ref settings.EnableTalkSkipCutscene);
                 ImGui.Checkbox("Semi-automatic request handin", ref settings.EnableRequestHandin);
                 ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref settings.EnableRequestFill);
                 ImGui.Checkbox("Automatic ESC press during cutscene", ref settings.EnableCutsceneEsc);

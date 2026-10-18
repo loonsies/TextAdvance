@@ -56,11 +56,9 @@ internal static class TabConfig
         .Widget(() =>
         {
             ImGui.Text("Button to hold to temporarily disable plugin when active:");
-            ImGui.SetNextItemWidth(200f);
-            ImGuiEx.EnumCombo("##HoldDisable", ref C.TempDisableButton);
+            Keybind.Draw("HoldDisable", ref C.TempDisableButton);
             ImGui.Text("Button to hold to temporarily enable plugin when inactive:");
-            ImGui.SetNextItemWidth(200f);
-            ImGuiEx.EnumCombo("##HoldEnable", ref C.TempEnableButton);
+            Keybind.Draw("HoldEnable", ref C.TempEnableButton);
         })
 
         .Section("Functions")
@@ -73,7 +71,9 @@ internal static class TabConfig
             ImGui.Checkbox("Automatic reward pick (RP)", ref C.MainConfig.EnableRewardPick);
             ImGuiComponents.HelpMarker("Automatically picks quest completion reward based on simple rules that are configured below");
             ImGui.Checkbox("Automatic talk skip (TS)", ref C.MainConfig.EnableTalkSkip);
-            ImGuiComponents.HelpMarker("Automatically advances most of the subtitles. Some subtitles may only be advanced manually still.");
+            ImGuiComponents.HelpMarker("Automatically advances dialogue outside cutscenes.");
+            ImGui.Checkbox("Automatic talk skip during cutscenes (TSC)", ref C.MainConfig.EnableTalkSkipCutscene);
+            ImGuiComponents.HelpMarker("Automatically advances dialogue during cutscenes, independently of TS.");
             ImGui.Checkbox("Auto-confirm request handins (RH)", ref C.MainConfig.EnableRequestHandin);
             ImGuiComponents.HelpMarker("Automatically confirms most of item requests once filled. Some requests may not be automatically confirmed.");
             ImGui.Checkbox("Automatic request fill (RF)", ref C.MainConfig.EnableRequestFill);

@@ -1,5 +1,7 @@
 ﻿using ECommons.Configuration;
 using ECommons.Interop;
+using Dalamud.Game.ClientState.Keys;
+using System.Runtime.Serialization;
 
 namespace TextAdvance;
 
@@ -13,10 +15,10 @@ public enum RequestFillQualityPreference
 [Serializable]
 public class Config : IEzConfig
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
     public HashSet<string> AutoEnableNames = [];
-    public Button TempEnableButton = Button.NONE;
-    public Button TempDisableButton = Button.NONE;
+    public VirtualKey TempEnableButton = VirtualKey.NO_KEY;
+    public VirtualKey TempDisableButton = VirtualKey.NO_KEY;
     public TerritoryConfig MainConfig = new();
     public Dictionary<uint, TerritoryConfig> TerritoryConditions = [];
     public bool GlobalOverridesLocal = false;
@@ -43,6 +45,19 @@ public class Config : IEzConfig
     public bool QTAFinderEnabledWhenTADisable = false;
     public float AutoInteractMaxRadius = 10f;
     public bool UseSprintPeloton = true;
+
+    [OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        if (this.Version >= 3) return;
+        if ((int)this.TempEnableButton == 1) this.TempEnableButton = VirtualKey.MENU;
+        if ((int)this.TempEnableButton == 2) this.TempEnableButton = VirtualKey.SHIFT;
+        if ((int)this.TempEnableButton == 3) this.TempEnableButton = VirtualKey.CONTROL;
+        if ((int)this.TempDisableButton == 1) this.TempDisableButton = VirtualKey.MENU;
+        if ((int)this.TempDisableButton == 2) this.TempDisableButton = VirtualKey.SHIFT;
+        if ((int)this.TempDisableButton == 3) this.TempDisableButton = VirtualKey.CONTROL;
+        this.Version = 3;
+    }
 
     public bool GetEnableQuestAccept()
     {
@@ -97,6 +112,15 @@ public class Config : IEzConfig
             return val.EnableTalkSkip;
         }
         return this.MainConfig.EnableTalkSkip;
+    }
+    public bool GetEnableTalkSkipCutscene()
+    {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableTalkSkipCutscene;
+        if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.EnableTalkSkipCutscene;
+        }
+        return this.MainConfig.EnableTalkSkipCutscene;
     }
     public bool GetEnableRequestFill()
     {
@@ -186,11 +210,6 @@ public class Config : IEzConfig
     }
 }
 
-public enum Button
-{
-    NONE, ALT, SHIFT, CTRL
-}
-
 [Serializable]
 public class TerritoryConfig
 {
@@ -201,6 +220,7 @@ public class TerritoryConfig
     public bool EnableCutsceneEsc = true;
     public bool EnableCutsceneSkipConfirm = true;
     public bool EnableTalkSkip = true;
+    public bool EnableTalkSkipCutscene = false;
     public bool EnableRequestFill = true;
     public RequestFillQualityPreference RequestFillQualityPreference = RequestFillQualityPreference.Any;
     public bool EnableAutoInteract = false;
@@ -224,7 +244,7 @@ public class TerritoryConfig
 
     public bool IsEnabled()
     {
-        return this.EnableQuestAccept || this.EnableQuestComplete || this.EnableRequestHandin || this.EnableCutsceneEsc || this.EnableCutsceneSkipConfirm || this.EnableTalkSkip || this.EnableRequestFill || this.EnableRewardPick || this.EnableAutoInteract;
+        return this.EnableQuestAccept || this.EnableQuestComplete || this.EnableRequestHandin || this.EnableCutsceneEsc || this.EnableCutsceneSkipConfirm || this.EnableTalkSkip || this.EnableTalkSkipCutscene || this.EnableRequestFill || this.EnableRewardPick || this.EnableAutoInteract;
     }
 }
 
@@ -238,6 +258,7 @@ public class ExternalTerritoryConfig
     public bool? EnableCutsceneEsc = null;
     public bool? EnableCutsceneSkipConfirm = null;
     public bool? EnableTalkSkip = null;
+    public bool? EnableTalkSkipCutscene = null;
     public bool? EnableRequestFill = null;
     public RequestFillQualityPreference? RequestFillQualityPreference = null;
     public bool? EnableAutoInteract = null;
@@ -254,6 +275,7 @@ public class ExternalTerritoryConfig
         ret.EnableCutsceneEsc = this.EnableCutsceneEsc ?? other.EnableCutsceneEsc;
         ret.EnableCutsceneSkipConfirm = this.EnableCutsceneSkipConfirm ?? other.EnableCutsceneSkipConfirm;
         ret.EnableTalkSkip = this.EnableTalkSkip ?? other.EnableTalkSkip;
+        ret.EnableTalkSkipCutscene = this.EnableTalkSkipCutscene ?? other.EnableTalkSkipCutscene;
         ret.EnableRequestFill = this.EnableRequestFill ?? other.EnableRequestFill;
         ret.RequestFillQualityPreference = this.RequestFillQualityPreference ?? other.RequestFillQualityPreference;
         ret.EnableAutoInteract = this.EnableAutoInteract ?? other.EnableAutoInteract;

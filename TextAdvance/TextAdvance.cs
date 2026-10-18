@@ -67,6 +67,8 @@ public unsafe class TextAdvance : IDalamudPlugin
                 HelpMessage = """
                 toggles TextAdvance plugin.\n/at y|yes|e|enable - turns on TextAdvance.
                 /at n|no|d|disable - turns off TextAdvance.
+                /at toggle - toggles TextAdvance.
+                /at [toggle] QA|QC|RP|TS|TSC|RH|RF|CS|CC|IN - toggles a mode in the current configuration.
                 /at c|config|s|settings - opens TextAdvance settings.
                 /at g - toggles visual quest target markers
                 /at mtq - move to the first available quest location, if present (requires navmesh integration to be enabled)
@@ -136,6 +138,8 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     private void HandleCommand(string command, string arguments)
     {
+        arguments = arguments.Trim();
+        if (arguments.StartsWith("toggle ", StringComparison.OrdinalIgnoreCase)) arguments = arguments[7..].Trim();
         if (arguments == "test")
         {
             try
@@ -163,6 +167,22 @@ public unsafe class TextAdvance : IDalamudPlugin
             {
                 Notify.Info($"Quest target indicators disabled");
             }
+        }
+        else if (arguments.EqualsIgnoreCaseAny("QA", "QC", "RP", "TS", "TSC", "RH", "RF", "CS", "CC", "IN"))
+        {
+            var config = C.MainConfig;
+            if (!(C.GlobalOverridesLocal && this.Enabled) && C.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var local)) config = local;
+            if (arguments.EqualsIgnoreCase("QA")) config.EnableQuestAccept = !config.EnableQuestAccept;
+            else if (arguments.EqualsIgnoreCase("QC")) config.EnableQuestComplete = !config.EnableQuestComplete;
+            else if (arguments.EqualsIgnoreCase("RP")) config.EnableRewardPick = !config.EnableRewardPick;
+            else if (arguments.EqualsIgnoreCase("TS")) config.EnableTalkSkip = !config.EnableTalkSkip;
+            else if (arguments.EqualsIgnoreCase("TSC")) config.EnableTalkSkipCutscene = !config.EnableTalkSkipCutscene;
+            else if (arguments.EqualsIgnoreCase("RH")) config.EnableRequestHandin = !config.EnableRequestHandin;
+            else if (arguments.EqualsIgnoreCase("RF")) config.EnableRequestFill = !config.EnableRequestFill;
+            else if (arguments.EqualsIgnoreCase("CS")) config.EnableCutsceneEsc = !config.EnableCutsceneEsc;
+            else if (arguments.EqualsIgnoreCase("CC")) config.EnableCutsceneSkipConfirm = !config.EnableCutsceneSkipConfirm;
+            else if (arguments.EqualsIgnoreCase("IN")) config.EnableAutoInteract = !config.EnableAutoInteract;
+            EzConfig.Save();
         }
         else if (arguments.EqualsIgnoreCaseAny("mtq"))
         {
@@ -235,6 +255,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                 }
             }
             this.InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+                || Svc.Condition[ConditionFlag.WatchingCutscene]
                 || Svc.Condition[ConditionFlag.WatchingCutscene78];
             if (!this.Locked)
             {
@@ -262,7 +283,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                         Svc.Condition[ConditionFlag.CarryingItem] ||
                         this.InCutscene))
                     {
-                        if (this.Config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
+                        if (this.InCutscene ? this.Config.GetEnableTalkSkipCutscene() : this.Config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
                         if (this.Config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
                         if (this.Config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
                         if (this.Config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
@@ -286,17 +307,11 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsDisableButtonHeld()
     {
-        if (this.Config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
-        if (this.Config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
-        if (this.Config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
-        return false;
+        return !CSFramework.Instance()->WindowInactive && IsKeyPressed((int)this.Config.TempDisableButton);
     }
 
     private bool IsEnableButtonHeld()
     {
-        if (this.Config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
-        if (this.Config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
-        if (this.Config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
-        return false;
+        return !CSFramework.Instance()->WindowInactive && IsKeyPressed((int)this.Config.TempEnableButton);
     }
 }
