@@ -8,6 +8,7 @@ internal static class Keybind
     private static HashSet<VirtualKey> HeldKeys = [];
     private static string ActiveId;
     private static long Deadline;
+    internal static bool IsCapturing => ActiveId != null && Environment.TickCount64 < Deadline;
 
     internal static void Draw(string id, ref VirtualKey key)
     {

@@ -19,6 +19,8 @@ public class Config : IEzConfig
     public HashSet<string> AutoEnableNames = [];
     public VirtualKey TempEnableButton = VirtualKey.NO_KEY;
     public VirtualKey TempDisableButton = VirtualKey.NO_KEY;
+    public VirtualKey ModeToggleButton = VirtualKey.NO_KEY;
+    public HashSet<string> ModeToggleModes = [];
     public TerritoryConfig MainConfig = new();
     public Dictionary<uint, TerritoryConfig> TerritoryConditions = [];
     public bool GlobalOverridesLocal = false;
@@ -64,72 +66,72 @@ public class Config : IEzConfig
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableQuestAccept;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableQuestAccept;
+            return ModeHotkey.Apply("QA", val.EnableQuestAccept);
         }
-        return this.MainConfig.EnableQuestAccept;
+        return ModeHotkey.Apply("QA", this.MainConfig.EnableQuestAccept);
     }
     public bool GetEnableQuestComplete()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableQuestComplete;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableQuestComplete;
+            return ModeHotkey.Apply("QC", val.EnableQuestComplete);
         }
-        return this.MainConfig.EnableQuestComplete;
+        return ModeHotkey.Apply("QC", this.MainConfig.EnableQuestComplete);
     }
     public bool GetEnableRequestHandin()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableRequestHandin;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableRequestHandin;
+            return ModeHotkey.Apply("RH", val.EnableRequestHandin);
         }
-        return this.MainConfig.EnableRequestHandin;
+        return ModeHotkey.Apply("RH", this.MainConfig.EnableRequestHandin);
     }
     public bool GetEnableCutsceneEsc()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableCutsceneEsc;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableCutsceneEsc;
+            return ModeHotkey.Apply("CS", val.EnableCutsceneEsc);
         }
-        return this.MainConfig.EnableCutsceneEsc;
+        return ModeHotkey.Apply("CS", this.MainConfig.EnableCutsceneEsc);
     }
     public bool GetEnableCutsceneSkipConfirm()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableCutsceneSkipConfirm;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableCutsceneSkipConfirm;
+            return ModeHotkey.Apply("CC", val.EnableCutsceneSkipConfirm);
         }
-        return this.MainConfig.EnableCutsceneSkipConfirm;
+        return ModeHotkey.Apply("CC", this.MainConfig.EnableCutsceneSkipConfirm);
     }
     public bool GetEnableTalkSkip()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableTalkSkip;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableTalkSkip;
+            return ModeHotkey.Apply("TS", val.EnableTalkSkip);
         }
-        return this.MainConfig.EnableTalkSkip;
+        return ModeHotkey.Apply("TS", this.MainConfig.EnableTalkSkip);
     }
     public bool GetEnableTalkSkipCutscene()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableTalkSkipCutscene;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableTalkSkipCutscene;
+            return ModeHotkey.Apply("TSC", val.EnableTalkSkipCutscene);
         }
-        return this.MainConfig.EnableTalkSkipCutscene;
+        return ModeHotkey.Apply("TSC", this.MainConfig.EnableTalkSkipCutscene);
     }
     public bool GetEnableRequestFill()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableRequestFill;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableRequestFill;
+            return ModeHotkey.Apply("RF", val.EnableRequestFill);
         }
-        return this.MainConfig.EnableRequestFill;
+        return ModeHotkey.Apply("RF", this.MainConfig.EnableRequestFill);
     }
     public RequestFillQualityPreference GetRequestFillQualityPreference()
     {
@@ -195,18 +197,18 @@ public class Config : IEzConfig
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableRewardPick;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableRewardPick;
+            return ModeHotkey.Apply("RP", val.EnableRewardPick);
         }
-        return this.MainConfig.EnableRewardPick;
+        return ModeHotkey.Apply("RP", this.MainConfig.EnableRewardPick);
     }
     public bool GetEnableAutoInteract()
     {
         if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).EnableAutoInteract;
         if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
-            return val.EnableAutoInteract;
+            return ModeHotkey.Apply("IN", val.EnableAutoInteract);
         }
-        return this.MainConfig.EnableAutoInteract;
+        return ModeHotkey.Apply("IN", this.MainConfig.EnableAutoInteract);
     }
 }
 
@@ -244,7 +246,7 @@ public class TerritoryConfig
 
     public bool IsEnabled()
     {
-        return this.EnableQuestAccept || this.EnableQuestComplete || this.EnableRequestHandin || this.EnableCutsceneEsc || this.EnableCutsceneSkipConfirm || this.EnableTalkSkip || this.EnableTalkSkipCutscene || this.EnableRequestFill || this.EnableRewardPick || this.EnableAutoInteract;
+        return ModeHotkey.Apply("QA", this.EnableQuestAccept) || ModeHotkey.Apply("QC", this.EnableQuestComplete) || ModeHotkey.Apply("RH", this.EnableRequestHandin) || ModeHotkey.Apply("CS", this.EnableCutsceneEsc) || ModeHotkey.Apply("CC", this.EnableCutsceneSkipConfirm) || ModeHotkey.Apply("TS", this.EnableTalkSkip) || ModeHotkey.Apply("TSC", this.EnableTalkSkipCutscene) || ModeHotkey.Apply("RF", this.EnableRequestFill) || ModeHotkey.Apply("RP", this.EnableRewardPick) || ModeHotkey.Apply("IN", this.EnableAutoInteract);
     }
 }
 

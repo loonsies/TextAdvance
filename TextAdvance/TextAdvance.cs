@@ -168,21 +168,9 @@ public unsafe class TextAdvance : IDalamudPlugin
                 Notify.Info($"Quest target indicators disabled");
             }
         }
-        else if (arguments.EqualsIgnoreCaseAny("QA", "QC", "RP", "TS", "TSC", "RH", "RF", "CS", "CC", "IN"))
+        else if (arguments.EqualsIgnoreCaseAny(ModeHotkey.Modes))
         {
-            var config = C.MainConfig;
-            if (!(C.GlobalOverridesLocal && this.Enabled) && C.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var local)) config = local;
-            if (arguments.EqualsIgnoreCase("QA")) config.EnableQuestAccept = !config.EnableQuestAccept;
-            else if (arguments.EqualsIgnoreCase("QC")) config.EnableQuestComplete = !config.EnableQuestComplete;
-            else if (arguments.EqualsIgnoreCase("RP")) config.EnableRewardPick = !config.EnableRewardPick;
-            else if (arguments.EqualsIgnoreCase("TS")) config.EnableTalkSkip = !config.EnableTalkSkip;
-            else if (arguments.EqualsIgnoreCase("TSC")) config.EnableTalkSkipCutscene = !config.EnableTalkSkipCutscene;
-            else if (arguments.EqualsIgnoreCase("RH")) config.EnableRequestHandin = !config.EnableRequestHandin;
-            else if (arguments.EqualsIgnoreCase("RF")) config.EnableRequestFill = !config.EnableRequestFill;
-            else if (arguments.EqualsIgnoreCase("CS")) config.EnableCutsceneEsc = !config.EnableCutsceneEsc;
-            else if (arguments.EqualsIgnoreCase("CC")) config.EnableCutsceneSkipConfirm = !config.EnableCutsceneSkipConfirm;
-            else if (arguments.EqualsIgnoreCase("IN")) config.EnableAutoInteract = !config.EnableAutoInteract;
-            EzConfig.Save();
+            ModeHotkey.Toggle([arguments]);
         }
         else if (arguments.EqualsIgnoreCaseAny("mtq"))
         {
@@ -232,6 +220,7 @@ public unsafe class TextAdvance : IDalamudPlugin
     {
         try
         {
+            ModeHotkey.Tick();
             while (QueuedSplatoonElements.TryDequeue(out var element))
             {
                 if (Splatoon.IsConnected() && element.IsValid())

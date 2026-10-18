@@ -59,6 +59,13 @@ internal static class TabConfig
             Keybind.Draw("HoldDisable", ref C.TempDisableButton);
             ImGui.Text("Button to hold to temporarily enable plugin when inactive:");
             Keybind.Draw("HoldEnable", ref C.TempEnableButton);
+            ImGui.Text("Button to hold to temporarily toggle selected modes:");
+            Keybind.Draw("ToggleModes", ref C.ModeToggleButton);
+            for (var i = 0; i < ModeHotkey.Modes.Length; i++)
+            {
+                if (i % 5 != 0) ImGui.SameLine();
+                ImGuiEx.CollectionCheckbox(ModeHotkey.Modes[i], ModeHotkey.Modes[i], C.ModeToggleModes);
+            }
         })
 
         .Section("Functions")
